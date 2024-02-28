@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #635fc7;
+  --primary-100: #635fc71a;
+  --primary-200: #635fc740;
+  --primary-300: #a8a4ff;
+  --black: #000112;
+  --black-50: #00000097;
+  --gray-600: #20212c;
+  --gray-500: #2b2c37;
+  --gray-400: #3e3f4e;
+  --gray-300: #828fa3;
+  --gray-200: #e4ebfa;
+  --gray-100: #f4f7fd;
+  --gray-50: #E4EBFA;
+  --secondary: #ea5555;
+  --secondary-100: #ff9898;
+  --white: #ffffff;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 400;
+}
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
