@@ -5,10 +5,13 @@ import { cn } from "@/plugins";
 
 type DeletePromptType = {
   title: string;
+  submitBtnLabel?: string;
   description: string;
+  isLoading: boolean;
 };
-const { title, description } = defineProps<DeletePromptType>();
-const emit = defineEmits<(e: "close:modal") => void>();
+const { title, description, submitBtnLabel, isLoading } =
+  defineProps<DeletePromptType>();
+const emit = defineEmits(["closeModal", "submit"]);
 const { theme } = useTheme();
 </script>
 
@@ -24,11 +27,16 @@ const { theme } = useTheme();
     <h2 class="text-lg font-bold text-error">{{ title }}</h2>
     <p class="text-[13px] font-medium text-gray">{{ description }}</p>
     <div class="flex flex-col gap-4 md:flex-row md:gap-6">
-      <Button variant="destructive" size="large" class="w-full justify-center"
-        >Delete</Button
+      <Button
+        @click="emit('submit')"
+        :is-loading="isLoading"
+        variant="destructive"
+        size="large"
+        class="w-full justify-center"
+        >{{ submitBtnLabel ? submitBtnLabel : "Delete" }}</Button
       >
       <Button
-        @click="emit('close:modal')"
+        @click="emit('closeModal')"
         variant="secondary"
         size="large"
         class="w-full justify-center"

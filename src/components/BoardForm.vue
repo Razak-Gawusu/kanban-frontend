@@ -1,40 +1,39 @@
 <script setup lang="ts">
 import { Form, FieldArray } from "vee-validate";
-import { useBoardForm, useTheme } from "@/composables";
-import Button from "./Button.vue";
-import TextField from "./TextField.vue";
-import Select from "./Select.vue";
-import Icon from "./Icon.vue";
+import { useDeleteResource, useTheme } from "@/composables";
+import { Icon, TextField, Button } from "@/components";
 import { cn } from "@/plugins";
-import { toTypedSchema } from "@vee-validate/zod";
-import { z } from "zod";
-import { reactive, ref } from "vue";
+import { boardSchema } from "@/schema";
 
-type Taskform = {
+type Props = {
   title: string;
+  initialData?: any;
+  edit?: boolean;
+  isLoading: boolean;
 };
-const { title } = defineProps<Taskform>();
+
+const { title, initialData, edit, isLoading } = defineProps<Props>();
+const emit =
+  defineEmits<(e: "submit", payload: Record<string, string>) => void>();
 const { theme } = useTheme();
-const { boardFormData, createBoard } = useBoardForm();
 
-const columns = reactive(["Todo", "Doing", "Done"]);
+const { deleteResource: deleteColumn } = useDeleteResource({
+  resource: "columns",
+  queryKeys: ["boards", "board"],
+});
 
-const selected = ref(columns[0]);
-function setSelected(option: string) {
-  selected.value = option;
+function handleSubmit(values: any) {
+  console.log(values);
+  emit("submit", values);
 }
 
-const validationSchema = toTypedSchema(
-  z.object({
-    name: z.string().min(1, "Can't be empty"),
-    columns: z.array(
-      z.object({
-        title: z.string().min(1, "Can't be empty"),
-        isCompleted: z.boolean(),
-      })
-    ),
-  })
-);
+function handleRemove(removeFn: any, val: any) {
+  if (edit) {
+    deleteColumn(val.id);
+  } else {
+    removeFn(val);
+  }
+}
 </script>
 
 <template>
@@ -48,12 +47,12 @@ const validationSchema = toTypedSchema(
     </h2>
 
     <Form
-      @submit="createBoard"
-      :initial-values="boardFormData"
-      :validation-schema="validationSchema"
+      @submit="handleSubmit"
+      :initial-values="initialData"
+      :validation-schema="boardSchema"
       class="grid gap-6"
     >
-      <TextField label="Name" name="name" />
+      <TextField label="Name" name="title" />
 
       <div class="flex flex-col gap-2">
         <label
@@ -71,10 +70,11 @@ const validationSchema = toTypedSchema(
             :key="field.key"
             class="flex justify-between items-center gap-4"
           >
-            <TextField :name="`columns.${idx}.name`">
-              <template #leftIcon="{ hasError }">
+            <TextField :name="`columns.${idx}.title`">
+              <template #rightIcon="{ hasError }">
                 <button
-                  @click="remove(idx)"
+                  type="button"
+                  @click="() => handleRemove(remove, field.value)"
                   :class="
                     cn(
                       'w-max',
@@ -90,10 +90,10 @@ const validationSchema = toTypedSchema(
           </div>
 
           <Button
-            @click="push({ name: '' })"
+            @click="push({ title: '' })"
             :variant="theme === 'dark' ? 'white' : 'secondary'"
             size="large"
-            class="justify-center"
+            class="justify-center mt-2"
             ><template #leftIcon>
               <Icon name="plus" />
             </template>
@@ -102,15 +102,9 @@ const validationSchema = toTypedSchema(
         </FieldArray>
       </div>
 
-      <Select
-        :options="columns"
-        :selected="selected"
-        @select:option="setSelected"
-      />
-
-      <Button size="large" variant="primary" class="justify-center"
-        >Create New Board</Button
-      >
+      <Button :is-loading="isLoading" class="justify-center">{{
+        edit ? "Save Changes" : "Create New Board"
+      }}</Button>
     </Form>
   </div>
 </template>

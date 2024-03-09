@@ -22,7 +22,7 @@ const { hideSidebar, toggleSidebar } = useSidebar();
       "
     >
       <AppHeader />
-      <slot></slot>
+      <RouterView />
     </div>
   </div>
 </template>

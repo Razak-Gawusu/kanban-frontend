@@ -1,8 +1,8 @@
-import { Task } from "@/types";
+import { ITask } from "@/interfaces";
 import { reactive } from "vue";
 
 export function useTask() {
-  const taskFormData = reactive<Task>({
+  const taskFormData = reactive<ITask>({
     id: 1,
     title: "",
     description: "",

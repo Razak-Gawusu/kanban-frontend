@@ -31,8 +31,8 @@ const { theme } = useTheme();
           :class="
             cn(
               'flex grow items-center justify-between py-3 px-4 rounded border border-gray-200 focus:outline-blue-500',
-              { 'border-error': meta.dirty && !meta.valid },
-              { 'border-gray-400': theme === 'dark' }
+              { 'border-gray-400': theme === 'dark' },
+              { '!border-error': meta.dirty && !meta.valid }
             )
           "
         >

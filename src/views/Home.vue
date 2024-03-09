@@ -1,154 +1,38 @@
 <script setup lang="ts">
-import EmptyBoard from "../components/EmptyBoard.vue";
+import Modal from "@/components/Modal.vue";
 import Button from "../components/Button.vue";
 import Icon from "../components/Icon.vue";
-import { useSidebar, useTheme } from "../composables";
+import { useCreateBoard, useSidebar, useTheme } from "../composables";
 import { cn } from "../plugins";
-// import { useBoards } from '@/composables'
-import ColumnList from "@/components/ColumnList.vue";
+import BoardForm from "@/components/BoardForm.vue";
+
 const { hideSidebar, toggleSidebar } = useSidebar();
 const { theme } = useTheme();
-const boards = [
-  {
-    id: 1,
-    title: "Todo",
-    tasks: [
-      {
-        id: 1,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 2,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 3,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Doing",
-    tasks: [
-      {
-        id: 1,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 2,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 3,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Doing",
-    tasks: [
-      {
-        id: 1,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 2,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 3,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 4,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 5,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Doing",
-    tasks: [
-      {
-        id: 1,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 2,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-      {
-        id: 3,
-        title: "Build UI for onboarding flow",
-        description:
-          "We know what we're planning to build for version one. Now we need to finalise the first pricing model we'll use. Keep iterating the subtasks until we have a coherent proposition.",
-        subTasks: [],
-      },
-    ],
-  },
-];
+const { openModal, closeModal, isLoadingCreateBoard, isOpen, onCreateBoard } =
+  useCreateBoard();
 </script>
 
 <template>
   <main
-    class="grow relative"
+    class="grow relative grid place-items-center"
     :class="{
       'bg-gray-100 ': theme === 'light',
       'bg-gray-600 text-white': theme === 'dark',
     }"
   >
-    <div v-if="boards.length === 0" class="grid place-items-center h-full">
-      <EmptyBoard />
+    <div
+      class="max-w-[343px] md:max-w-[400px] lg:max-w-[500px] grid gap-6 lg:gap-8 place-items-center"
+    >
+      <p class="text-lg font-bold text-center text-gray">
+        Create or Select board to get started.
+      </p>
+      <Button @click="openModal" variant="primary" size="large">
+        <template #leftIcon>
+          <Icon name="plus" />
+        </template>
+        Create Board</Button
+      >
     </div>
-    <div class="px-4 py-6">
-      <ColumnList :columns="boards" />
-    </div>
-
     <Button
       @click="toggleSidebar"
       variant="primary"
@@ -164,4 +48,12 @@ const boards = [
       </template>
     </Button>
   </main>
+
+  <Modal :isOpen="isOpen" @close-modal="closeModal">
+    <BoardForm
+      title="Add New Board"
+      :is-loading="isLoadingCreateBoard"
+      @submit="onCreateBoard"
+    />
+  </Modal>
 </template>

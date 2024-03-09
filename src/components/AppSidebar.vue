@@ -8,6 +8,7 @@ import { useTheme } from "../composables";
 import { cn } from "../plugins";
 const { hideSidebar } = defineProps<{ hideSidebar: boolean }>();
 const { theme } = useTheme();
+
 const emit = defineEmits<{
   (e: "update:hideSidebar"): void;
 }>();

@@ -13,14 +13,14 @@ const { isOpen, className } = defineProps<{
   isOpen: boolean;
 }>();
 const emit = defineEmits<{
-  (e: "close:modal"): void;
+  (e: "closeModal"): void;
 }>();
 const { theme } = useTheme();
 </script>
 
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
-    <Dialog as="div" @close="emit('close:modal')" class="relative z-10">
+    <Dialog as="div" @close="emit('closeModal')" class="relative z-10">
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"

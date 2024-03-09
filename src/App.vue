@@ -1,11 +1,7 @@
-<script setup lang="ts">
-import KanbanLayout from "./layouts/KanbanLayout.vue";
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <KanbanLayout>
-    <RouterView />
-  </KanbanLayout>
+  <RouterView />
 </template>
 
 <style scoped></style>

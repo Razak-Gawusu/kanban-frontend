@@ -1,6 +1,23 @@
 <script setup lang="ts">
-import Button from "./Button.vue";
-import Icon from "./Icon.vue";
+import { useEditBoard } from "@/composables";
+import { Button, Icon, Modal, BoardForm } from "@/components";
+import { IColumn } from "@/interfaces";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+
+type Props = {
+  title?: string;
+  columns?: IColumn[];
+};
+
+const route = useRoute();
+const { title, columns } = defineProps<Props>();
+const { openModal, isLoadingEditBoard, isOpen, editBoard, closeModal } =
+  useEditBoard(computed(() => route.params.boardId));
+
+const initialData = computed(() => {
+  return { title, columns };
+});
 </script>
 
 <template>
@@ -10,11 +27,21 @@ import Icon from "./Icon.vue";
     <p class="text-lg font-bold text-center text-gray">
       This board is empty. Create a new column to get started.
     </p>
-    <Button variant="primary" size="large">
+    <Button @click="openModal" variant="primary" size="large">
       <template #leftIcon>
         <Icon name="plus" />
       </template>
       Add New Column</Button
     >
   </div>
+
+  <Modal :isOpen="isOpen" @close-modal="closeModal">
+    <BoardForm
+      title="Edit Board"
+      :initialData="initialData"
+      @submit="editBoard"
+      :is-loading="isLoadingEditBoard"
+      edit
+    />
+  </Modal>
 </template>

@@ -1,20 +1,30 @@
 <script setup lang="ts">
-import { useModal, useTheme } from "../composables";
-import Icon from "./Icon.vue";
-import Button from "./Button.vue";
 import { cn } from "../plugins";
-import Dropdown from "./Dropdown.vue";
-import MobileSidebar from "./MobileSidebar.vue";
-import { ref } from "vue";
-import Modal from "./Modal.vue";
-import TaskForm from "./TaskForm.vue";
-import BoardForm from "./BoardForm.vue";
-import DeletePrompt from "./DeletePrompt.vue";
+import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
+import {
+  useDeleteResource,
+  useEditBoard,
+  useGetBoard,
+  useModal,
+  useTheme,
+} from "../composables";
+import {
+  Icon,
+  Button,
+  Dropdown,
+  Modal,
+  TaskForm,
+  BoardForm,
+  DeletePrompt,
+  Account,
+  MobileSidebar,
+} from "@/components";
 
 const { theme } = useTheme();
+const route = useRoute();
 const open = ref(false);
 function toggleMenu() {
-  console.log("clicked");
   open.value = !open.value;
 }
 
@@ -24,22 +34,36 @@ const {
   closeModal: closeModalCreateTask,
 } = useModal();
 
-const {
-  isOpen: isOpenEditBoard,
-  openModal: openModalEditBoard,
-  closeModal: closeModalEditBoard,
-} = useModal();
-
-const {
-  isOpen: isOpenDeleteBoard,
-  openModal: openModalDeleteBoard,
-  closeModal: closeModalDeleteBoard,
-} = useModal();
-
 const boardOptions = [
   { label: "Edit Board", value: "edit" },
   { label: "Delete Board", value: "delete" },
 ];
+
+const { data } = useGetBoard(computed(() => route.params.boardId));
+const {
+  editBoard,
+  isLoadingEditBoard,
+  isOpen: isOpenEditBoard,
+  openModal: openModalEditBoard,
+  closeModal: closeModalEditBoard,
+} = useEditBoard(computed(() => route.params.boardId));
+
+const {
+  deleteResource,
+  isLoadingDeleteResource,
+  isOpen: isOpenDeleteBoard,
+  openModal: openModalDeleteBoard,
+  closeModal: closeModalDeleteBoard,
+} = useDeleteResource({
+  resource: "boards",
+  queryKeys: ["boards"],
+});
+// const columns = computed(() => data.value?.data.columns);
+const title = computed(() => data.value?.data.title);
+const initialData = computed(() => data.value?.data);
+const show = computed(() => Boolean(data.value?.data));
+
+console.log({ data: data.value });
 
 function performDropdownActions(action: string) {
   switch (action) {
@@ -59,56 +83,68 @@ function performDropdownActions(action: string) {
   <header
     :class="
       cn(
-        'flex items-center justify-between py-5 px-4 md:px-6 md:py-7 lg:p-8 md:border-b md:border-gray-50 sticky top-0 z-10',
+        'flex justify-between items-center py-5 px-4 md:px-6 md:py-7 lg:p-8 md:border-b md:border-gray-50 sticky top-0 z-10',
         { 'bg-white': theme === 'light' },
         { 'bg-gray-500 text-white md:border-gray-400': theme === 'dark' }
       )
     "
   >
-    <div class="flex">
-      <div class="flex gap-4 items-center md:hidden" @click="toggleMenu">
+    <div class="flex justify-between items-center">
+      <div
+        class="flex justify-between gap-4 items-center md:hidden"
+        @click="toggleMenu"
+      >
         <Icon name="kanbanLogoOutline" />
         <h1 class="text-lg font-bold">Platform Launch</h1>
         <Icon name="chevron" />
       </div>
       <h1 class="text-xl lg:text-2xl font-bold max-md:hidden">
-        Platform Launch
+        {{ title }}
       </h1>
     </div>
 
     <MobileSidebar :class="cn({ flex: open })" />
 
-    <div class="flex gap-6 items-center">
-      <Button
-        @click="openModalCreateTask"
-        variant="primary"
-        size="large"
-        class="w-[178px] justify-center"
-        ><template #leftIcon>
-          <Icon name="plus" />
-        </template>
-        <p class="hidden md:block">Add New Task</p>
-      </Button>
+    <div class="flex items-center justify-between gap-6">
+      <div v-if="show" class="flex items-center gap-2">
+        <Button @click="openModalCreateTask" class="justify-center"
+          ><template #leftIcon>
+            <Icon name="plus" />
+          </template>
+          Add New Task
+        </Button>
 
-      <Dropdown
-        :options="boardOptions"
-        @perform:action="performDropdownActions"
-      >
-        <Icon name="kebab" />
-      </Dropdown>
+        <Dropdown
+          :options="boardOptions"
+          @perform:action="performDropdownActions"
+        >
+          <button class="w-6 flex justify-center">
+            <Icon name="kebab" />
+          </button>
+        </Dropdown>
+      </div>
+      <Account />
     </div>
   </header>
 
-  <Modal :isOpen="isOpenCreateTask" @close:modal="closeModalCreateTask">
+  <Modal :isOpen="isOpenCreateTask" @close-modal="closeModalCreateTask">
     <TaskForm title="Add New Task" />
   </Modal>
-  <Modal :isOpen="isOpenEditBoard" @close:modal="closeModalEditBoard">
-    <BoardForm title="Edit Board" />
+  <Modal :isOpen="isOpenEditBoard" @close-modal="closeModalEditBoard">
+    <BoardForm
+      title="Edit Board"
+      :initialData="initialData"
+      :is-loading="isLoadingEditBoard"
+      @submit="editBoard"
+      edit
+    />
   </Modal>
 
   <Modal :is-open="isOpenDeleteBoard" @close:modal="closeModalDeleteBoard">
     <DeletePrompt
-      @close:modal="closeModalDeleteBoard"
+      @submit="() => deleteResource(route.params.boardId)"
+      @closeModal="closeModalDeleteBoard"
+      :is-loading="isLoadingDeleteResource"
       title="Delete this board?"
       description="Are you sure you want to delete the ‘Platform Launch’ board? This action will remove all columns and tasks and cannot be reversed."
     />

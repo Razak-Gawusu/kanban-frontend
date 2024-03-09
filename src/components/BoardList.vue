@@ -1,41 +1,38 @@
 <script setup lang="ts">
+import { RouterLink } from "vue-router";
 import { cn } from "../plugins";
 import BoardForm from "./BoardForm.vue";
 import Button from "./Button.vue";
 import Icon from "./Icon.vue";
 import Modal from "./Modal.vue";
-import { useModal } from "@/composables";
+import { useCreateBoard } from "@/composables";
 
-type Board = {
-  id: number;
-  label: string;
-};
-const { boards, activeBoard } = defineProps<{
-  boards: Board[];
+const { boards } = defineProps<{
+  boards: any[];
   activeBoard: number | null;
 }>();
-const emit = defineEmits<{
-  (e: "update:activeBoard", id: number): void;
-}>();
-
-const { isOpen, openModal, closeModal } = useModal();
+const { openModal, closeModal, isOpen, onCreateBoard, isLoadingCreateBoard } =
+  useCreateBoard();
 </script>
 
 <template>
   <div>
-    <Button
-      v-for="{ id, label } in boards"
+    <RouterLink
+      :to="{ name: 'board', params: { boardId: id } }"
+      v-slot="{ isActive }"
+      v-for="{ id, title } in boards"
       :key="id"
-      @click="emit('update:activeBoard', id)"
-      :variant="id === activeBoard ? 'primary' : 'tertiary'"
-      size="large"
-      :class="cn('w-full rounded-none rounded-r-full pl-6 lg:pl-8 gap-4')"
     >
-      <template #leftIcon>
-        <Icon name="boardIcon" />
-      </template>
-      {{ label }}
-    </Button>
+      <Button
+        :variant="isActive ? 'primary' : 'tertiary'"
+        :class="cn('w-full rounded-none rounded-r-full pl-6 lg:pl-8 gap-4')"
+      >
+        <template #leftIcon>
+          <Icon name="boardIcon" />
+        </template>
+        {{ title }}
+      </Button>
+    </RouterLink>
 
     <Button
       @click="openModal"
@@ -52,7 +49,11 @@ const { isOpen, openModal, closeModal } = useModal();
     </Button>
   </div>
 
-  <Modal :isOpen="isOpen" @close:modal="closeModal">
-    <BoardForm title="Add New Board" />
+  <Modal :is-open="isOpen" @close-modal="closeModal">
+    <BoardForm
+      title="Add New Board"
+      @submit="onCreateBoard"
+      :is-loading="isLoadingCreateBoard"
+    />
   </Modal>
 </template>

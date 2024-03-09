@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useTheme } from "@/composables";
 import { cn } from "@/plugins";
-import { Task } from "@/types";
+import { ITask } from "@/interfaces";
 import Modal from "./Modal.vue";
 import { useModal } from "@/composables";
 import TaskDetails from "./TaskDetails.vue";
 
-const { task } = defineProps<{ task: Task }>();
+const { task } = defineProps<{ task: ITask }>();
 const { theme } = useTheme();
 const { isOpen, openModal, closeModal } = useModal();
 </script>
@@ -43,3 +43,4 @@ const { isOpen, openModal, closeModal } = useModal();
   box-shadow: 0px 4px 6px 0px rgba(54, 78, 126, 0.1);
 }
 </style>
+@/interfaces

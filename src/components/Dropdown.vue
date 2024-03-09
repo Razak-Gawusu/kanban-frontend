@@ -14,7 +14,7 @@ const { theme } = useTheme();
 </script>
 <template>
   <Menu as="div" class="relative inline-block text-left">
-    <MenuButton class="w-6 h-6 grid place-items-center">
+    <MenuButton>
       <slot />
     </MenuButton>
 
@@ -29,7 +29,7 @@ const { theme } = useTheme();
       <MenuItems
         :class="
           cn(
-            'absolute right-0 mt-2 w-48 origin-top-right p-2 rounded-lg shadow-lg focus:outline-none',
+            'absolute right-0  w-48 origin-top-right p-2 rounded-lg shadow-lg focus:outline-none',
             { 'bg-white': theme === 'light' },
             { 'bg-gray-600': theme === 'dark' }
           )
@@ -46,7 +46,14 @@ const { theme } = useTheme();
             :class="
               cn(
                 'group flex w-full items-center rounded-md p-2 text-sm font-medium text-gray',
-                { 'text-error': option.value.startsWith('delete') },
+                {
+                  'text-error hover:bg-red-50':
+                    option.value.startsWith('delete'),
+                },
+                {
+                  'text-error hover:bg-red-50':
+                    option.value.startsWith('logout'),
+                },
                 { 'bg-primary-100': active && theme === 'light' },
                 { 'bg-primary-100': active && theme === 'dark' }
               )

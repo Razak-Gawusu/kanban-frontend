@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../plugins";
+import { Spinner } from "@/components";
 
 const button = cva("flex gap-1 items-center font-bold rounded-full", {
   variants: {
@@ -21,22 +22,20 @@ const button = cva("flex gap-1 items-center font-bold rounded-full", {
 
 type ButtonProps = VariantProps<typeof button>;
 
-const { isLoading } = withDefaults(
-  defineProps<{
-    variant: ButtonProps["variant"];
-    size: ButtonProps["size"];
-    isLoading?: boolean;
-  }>(),
-  {
-    variant: "primary",
-    size: "large",
-  }
-);
+const {
+  isLoading,
+  variant = "primary",
+  size = "large",
+} = defineProps<{
+  variant?: ButtonProps["variant"];
+  size?: ButtonProps["size"];
+  isLoading?: boolean;
+}>();
 </script>
 
 <template>
   <button :class="cn(button({ variant, size }))">
-    <div v-if="isLoading" class="h-5 w-5 bg-gray-500"></div>
+    <Spinner v-if="isLoading" />
     <template v-else>
       <slot name="leftIcon" />
       <slot />

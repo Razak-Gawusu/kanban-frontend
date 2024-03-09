@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { Column as IColumn } from "@/types";
-import Column from "./Column.vue";
-import Button from "./Button.vue";
-import Icon from "./Icon.vue";
+import { IColumn } from "@/interfaces";
 import { cn } from "@/plugins";
-import { useModal, useTheme } from "@/composables";
-import Modal from "./Modal.vue";
+import { useEditBoard, useTheme } from "@/composables";
 import BoardForm from "./BoardForm.vue";
+import { Modal, Icon, Button, Column } from "@/components";
+import { useRoute } from "vue-router";
+import { computed } from "vue";
 
+const route = useRoute();
 const { theme } = useTheme();
-const { columns } = defineProps<{ columns: IColumn[] }>();
-const { isOpen, openModal, closeModal } = useModal();
+const { columns, title } = defineProps<{ columns: IColumn[]; title: string }>();
+const { openModal, closeModal, isLoadingEditBoard, isOpen, editBoard } =
+  useEditBoard(computed(() => route.params.boardId));
+
+const initialData = computed(() => ({ title, columns }));
 </script>
 
 <template>
@@ -35,8 +38,14 @@ const { isOpen, openModal, closeModal } = useModal();
     </div>
   </div>
 
-  <Modal :isOpen="isOpen" @close:modal="closeModal">
-    <BoardForm title="Edit Board" />
+  <Modal :isOpen="isOpen" @close-modal="closeModal">
+    <BoardForm
+      title="Edit Board"
+      @submit="editBoard"
+      :initial-data="initialData"
+      :is-loading="isLoadingEditBoard"
+      edit
+    />
   </Modal>
 </template>
 
@@ -75,3 +84,4 @@ const { isOpen, openModal, closeModal } = useModal();
   background-color: transparent; /* color of the track */
 }
 </style>
+@/interfaces

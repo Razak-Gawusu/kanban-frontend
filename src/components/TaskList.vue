@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Task as ITask } from "@/types";
+import { ITask } from "@/interfaces";
 import Task from "./Task.vue";
 
 const { tasks = [] } = defineProps<{ tasks: ITask[] }>();
@@ -10,3 +10,4 @@ const { tasks = [] } = defineProps<{ tasks: ITask[] }>();
     <Task v-for="task in tasks" :key="task.id" :task="task" />
   </div>
 </template>
+@/interfaces

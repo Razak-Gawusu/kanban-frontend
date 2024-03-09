@@ -32,6 +32,6 @@ export default {
       },
     },
   },
-  plugins: ["tailwindcss/nesting"],
+  plugins: ["postcss-import", "tailwindcss/nesting"],
   important: true,
 };

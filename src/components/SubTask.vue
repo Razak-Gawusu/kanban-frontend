@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useTheme } from "@/composables";
 import { cn } from "@/plugins";
-import { SubTask } from "@/types";
+import { ISubTask } from "@/interfaces";
 import Checkbox from "./Checkbox.vue";
 
-const { title, isCompleted } = defineProps<SubTask>();
+const { title, isCompleted } = defineProps<ISubTask>();
 
 const { theme } = useTheme();
 </script>
@@ -29,3 +29,4 @@ const { theme } = useTheme();
     </label>
   </div>
 </template>
+@/interfaces

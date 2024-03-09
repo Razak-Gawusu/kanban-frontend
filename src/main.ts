@@ -1,10 +1,12 @@
 import { createApp } from "vue";
 import { defineRule, configure } from "vee-validate";
 import { confirmed, min, required } from "@vee-validate/rules";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 import { localize } from "@vee-validate/i18n";
+import { createPinia } from "pinia";
 import "./style.css";
 import App from "./App.vue";
-import router from "./router/router";
+import { router } from "./router";
 
 defineRule("min", min);
 defineRule("comfirm", confirmed);
@@ -23,4 +25,4 @@ configure({
     },
   }),
 });
-createApp(App).use(router).mount("#app");
+createApp(App).use(VueQueryPlugin).use(createPinia()).use(router).mount("#app");
