@@ -1,41 +1,39 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { Form, FieldArray } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import { z } from "zod";
 import { cn } from "@/plugins";
-import { useTask, useTheme } from "@/composables";
-import Button from "./Button.vue";
-import TextField from "./TextField.vue";
-import Select from "./Select.vue";
-import Icon from "./Icon.vue";
+import { useTheme } from "@/composables";
+import { Icon, TextField, Button, Select } from "@/components";
+import { IColumn } from "@/interfaces";
+import { taskSchema } from "@/schema";
+import { getColumnOptions } from "@/helpers";
 
-type Taskform = {
+type Props = {
   title: string;
+  initialData?: any;
+  isLoading: boolean;
+  edit?: boolean;
+  columns?: IColumn[];
 };
-const { title } = defineProps<Taskform>();
+const { title, initialData, isLoading, columns } = defineProps<Props>();
+
+const emit = defineEmits<(e: "submit", payload: Record<string, any>) => void>();
 const { theme } = useTheme();
-const { taskFormData, addTask } = useTask();
 
-const columns = reactive(["Todo", "Doing", "Done"]);
+const selected = ref<{ id: string | number; value: string | number }>();
 
-const selected = ref(columns[0]);
-function setSelected(option: string) {
+function setSelected(option: { id: string | number; value: string | number }) {
   selected.value = option;
 }
 
-const validationSchema = toTypedSchema(
-  z.object({
-    title: z.string().min(1, "Can't be empty"),
-    description: z.string(),
-    subTasks: z.array(
-      z.object({
-        title: z.string().min(1, "Can't be empty"),
-        isCompleted: z.boolean(),
-      })
-    ),
-  })
-);
+function handleSubmit(values: Record<string, string>) {
+  console.log({ values });
+  console.log({ selected: selected.value });
+
+  if (selected.value?.id) {
+    emit("submit", { ...values, column_id: selected.value?.id });
+  }
+}
 </script>
 
 <template>
@@ -49,9 +47,9 @@ const validationSchema = toTypedSchema(
     </h2>
 
     <Form
-      @submit="addTask"
-      :initial-values="taskFormData"
-      :validation-schema="validationSchema"
+      @submit="handleSubmit"
+      :initial-values="initialData"
+      :validation-schema="taskSchema"
       class="grid gap-6"
     >
       <TextField label="Title" name="title" />
@@ -92,7 +90,7 @@ const validationSchema = toTypedSchema(
           </div>
 
           <Button
-            @click="push({ title: '', isCompleted: false })"
+            @click="push({ title: '', is_completed: false })"
             :variant="theme === 'dark' ? 'white' : 'secondary'"
             size="large"
             class="justify-center"
@@ -105,12 +103,16 @@ const validationSchema = toTypedSchema(
       </div>
 
       <Select
-        :options="columns"
+        :options="getColumnOptions(columns)"
         :selected="selected"
-        @select:option="setSelected"
+        @select="setSelected"
       />
 
-      <Button size="large" variant="primary" class="justify-center"
+      <Button
+        :is-loading="isLoading"
+        size="large"
+        variant="primary"
+        class="justify-center"
         >Create Task</Button
       >
     </Form>

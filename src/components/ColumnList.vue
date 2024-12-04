@@ -9,7 +9,9 @@ import { computed } from "vue";
 
 const route = useRoute();
 const { theme } = useTheme();
+
 const { columns, title } = defineProps<{ columns: IColumn[]; title: string }>();
+
 const { openModal, closeModal, isLoadingEditBoard, isOpen, editBoard } =
   useEditBoard(computed(() => route.params.boardId));
 

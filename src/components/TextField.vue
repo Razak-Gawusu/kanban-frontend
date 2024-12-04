@@ -2,6 +2,7 @@
 import { Field, ErrorMessage } from "vee-validate";
 import { useTheme } from "@/composables";
 import { cn } from "@/plugins";
+import z from "zod";
 
 type CustomInputProps = {
   name: string;
@@ -30,7 +31,8 @@ const { theme } = useTheme();
         <div
           :class="
             cn(
-              'flex grow items-center justify-between py-3 px-4 rounded border border-gray-200 focus:outline-blue-500',
+              'flex grow items-center justify-between py-3 px-4 rounded ring-1 ring-gray-200',
+              'focus-within:ring-1 focus-within:ring-primary',
               { 'border-gray-400': theme === 'dark' },
               { '!border-error': meta.dirty && !meta.valid }
             )

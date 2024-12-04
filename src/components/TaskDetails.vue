@@ -1,39 +1,49 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import Dropdown from "./Dropdown.vue";
-import Modal from "./Modal.vue";
-import SubTask from "./SubTask.vue";
-import Select from "./Select.vue";
-import Icon from "./Icon.vue";
-import TaskForm from "./TaskForm.vue";
-import DeletePrompt from "./DeletePrompt.vue";
-import { cn } from "@/plugins";
-import { useModal, useTheme } from "@/composables";
+import {
+  DeletePrompt,
+  Dropdown,
+  Modal,
+  Select,
+  Icon,
+  TaskForm,
+  SubTask,
+} from "@/components";
 
+import { cn } from "@/plugins";
+import { useDeleteResource, useEditTask, useTheme } from "@/composables";
+import { IColumn, ITask } from "@/interfaces";
+import { getColumnOptions } from "@/helpers";
+
+type Props = {
+  columns: IColumn[];
+  task: ITask;
+  numberOfSubTasksCompleted: number;
+  subTasksTotal: number;
+};
+
+const { task } = defineProps<Props>();
 const taskOptions = [
   { label: "Edit Task", value: "edit" },
   { label: "Delete Task", value: "delete" },
 ];
-const columns = reactive(["Todo", "Doing", "Done"]);
-
-const selected = ref(columns[0]);
-function setSelected(option: string) {
-  selected.value = option;
-}
-
 const { theme } = useTheme();
 
 const {
   isOpen: isOpenEditTask,
   openModal: openModalEditTask,
   closeModal: closeModalEditTask,
-} = useModal();
+  editTask,
+  isLoadingEditTask,
+} = useEditTask(task.id);
 
 const {
   isOpen: isOpenDeleteTask,
   openModal: openModalDeleteTask,
   closeModal: closeModalDeleteTask,
-} = useModal();
+  isLoadingDeleteResource,
+  deleteResource,
+} = useDeleteResource({ resource: "tasks" });
 
 function performDropdownActions(action: string) {
   switch (action) {
@@ -47,6 +57,17 @@ function performDropdownActions(action: string) {
       throw new Error("Action doesn't exit");
   }
 }
+
+const selected = ref<{ id: string | number; value: string | number }>();
+
+function setSelected(option: { id: string | number; value: string | number }) {
+  selected.value = option;
+  editTask({ ...task, column_id: option.id });
+}
+
+// function handleChange() {
+//   editTask({ ...task, column_id: option.id });
+// }
 </script>
 
 <template>
@@ -57,57 +78,60 @@ function performDropdownActions(action: string) {
           cn('font-bold text-lg text-black', { 'text-white': theme === 'dark' })
         "
       >
-        Research pricing points of various competitors and trial different
-        business models
+        {{ task.title }}
       </h2>
 
       <Dropdown :options="taskOptions" @perform:action="performDropdownActions">
-        <Icon name="kebab" />
+        <button class="w-6 h-6 flex justify-center">
+          <Icon name="kebab" />
+        </button>
       </Dropdown>
     </div>
 
     <div class="grid gap-6">
       <p class="text-[13px] leading-6 text-gray font-medium">
-        We know what we're planning to build for version one. Now we need to
-        finalise the first pricing model we'll use. Keep iterating the subtasks
-        until we have a coherent proposition.
+        {{ task.description }}
       </p>
 
       <div class="grid gap-4">
-        <h3 class="font-bold text-xs text-gray">Subtasks (2 of 3)</h3>
+        <h3 class="font-bold text-xs text-gray">
+          Subtasks ({{ numberOfSubTasksCompleted }} of {{ subTasksTotal }})
+        </h3>
 
         <SubTask
-          :id="1"
-          title="Research competitor pricing and business models"
-          :isCompleted="false"
-        />
-        <SubTask
-          :id="1"
-          title="Research competitor pricing and business models Research competitor pricing and business models"
-          :isCompleted="false"
-        />
-        <SubTask
-          :id="1"
-          title="Research competitor pricing and business models Research competitor pricing and business models Research competitor pricing and business models"
-          :isCompleted="false"
+          v-for="subTask in task.subTasks"
+          :key="subTask.id"
+          :id="subTask.id"
+          :title="subTask.title"
+          :is_completed="subTask.is_completed"
+          @change=""
         />
       </div>
 
       <Select
-        :options="columns"
+        :options="getColumnOptions(columns)"
         :selected="selected"
-        @select:option="setSelected"
+        @select="setSelected"
       />
     </div>
   </div>
 
-  <Modal :isOpen="isOpenEditTask" @close:modal="closeModalEditTask">
-    <TaskForm title="Edit Task" />
+  <Modal :isOpen="isOpenEditTask" @close-modal="closeModalEditTask">
+    <TaskForm
+      title="Edit Task"
+      :columns="columns"
+      :initial-data="task"
+      @submit="editTask"
+      :is-loading="isLoadingEditTask"
+      edit
+    />
   </Modal>
 
   <Modal :is-open="isOpenDeleteTask" @close:modal="closeModalDeleteTask">
     <DeletePrompt
-      @close:modal="closeModalDeleteTask"
+      @submit="() => deleteResource(task.id)"
+      @close-modal="closeModalDeleteTask"
+      :is-loading="isLoadingDeleteResource"
       title="Delete this task?"
       description="Are you sure you want to delete the ‘Build settings UI’ task and its subtasks? This action cannot be reversed."
     />

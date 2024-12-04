@@ -9,11 +9,11 @@ export interface IUser {
 export interface ISubTask {
   id: number;
   title: string;
-  isCompleted: boolean;
+  is_completed: boolean;
 }
 
 export interface ITask {
-  id: number;
+  id: string;
   title: string;
   description: string;
   subTasks: ISubTask[];

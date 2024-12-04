@@ -11,10 +11,16 @@ import { useTheme } from "@/composables";
 
 const { theme } = useTheme();
 const { options, selected } = defineProps<{
-  options: string[];
-  selected: string;
+  options: { id: number | string; value: string | number }[];
+  selected?: { id: number | string; value: string | number };
 }>();
-const emit = defineEmits<(e: "select:option", option: string) => void>();
+const emit =
+  defineEmits<
+    (
+      e: "select",
+      option: { id: string | number; value: string | number }
+    ) => void
+  >();
 </script>
 <template>
   <Listbox class="z-50">
@@ -29,7 +35,7 @@ const emit = defineEmits<(e: "select:option", option: string) => void>();
         "
       >
         <span class="block truncate text-[13px] font-medium">{{
-          selected
+          selected?.value ?? "Select Column"
         }}</span>
         <span
           class="pointer-events-none absolute inset-y-0 right-0 flex justify-center items-center pr-4"
@@ -55,10 +61,10 @@ const emit = defineEmits<(e: "select:option", option: string) => void>();
           <ListboxOption
             v-slot="{ active, selected }"
             v-for="option in options"
-            :key="option"
-            :value="option"
+            :key="option.id"
+            :value="option.value"
             as="template"
-            @click="emit('select:option', option)"
+            @click="emit('select', option)"
           >
             <li
               :class="
@@ -78,7 +84,7 @@ const emit = defineEmits<(e: "select:option", option: string) => void>();
                   selected ? 'font-medium' : 'font-normal',
                   'block truncate',
                 ]"
-                >{{ option }}</span
+                >{{ option.value }}</span
               >
               <span
                 v-if="selected"

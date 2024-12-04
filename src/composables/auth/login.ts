@@ -10,9 +10,9 @@ export function useLogin() {
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: (data: Record<string, string>) =>
-      httpClient.post("/auth/login", data),
+      httpClient.post("/auth/jwt/create", data),
     onSuccess: (data: any) => {
-      localStorage.setItem("token", data.data.token);
+      // localStorage.setItem("token", data.data.token);
       authenticate(data.data.token);
       router.push({ name: "home" });
     },

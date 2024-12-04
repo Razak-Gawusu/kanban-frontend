@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, FieldArray } from "vee-validate";
-import { useDeleteResource, useTheme } from "@/composables";
+import { useTheme } from "@/composables";
 import { Icon, TextField, Button } from "@/components";
 import { cn } from "@/plugins";
 import { boardSchema } from "@/schema";
@@ -17,23 +17,17 @@ const emit =
   defineEmits<(e: "submit", payload: Record<string, string>) => void>();
 const { theme } = useTheme();
 
-const { deleteResource: deleteColumn } = useDeleteResource({
-  resource: "columns",
-  queryKeys: ["boards", "board"],
-});
-
 function handleSubmit(values: any) {
-  console.log(values);
-  emit("submit", values);
+  let columns = [];
+
+  for (let item of initialData?.columns) {
+    columns.push(item.id);
+  }
+
+  console.log({ columns });
 }
 
-function handleRemove(removeFn: any, val: any) {
-  if (edit) {
-    deleteColumn(val.id);
-  } else {
-    removeFn(val);
-  }
-}
+function removedColumns() {}
 </script>
 
 <template>
@@ -74,7 +68,7 @@ function handleRemove(removeFn: any, val: any) {
               <template #rightIcon="{ hasError }">
                 <button
                   type="button"
-                  @click="() => handleRemove(remove, field.value)"
+                  @click="() => remove(idx)"
                   :class="
                     cn(
                       'w-max',

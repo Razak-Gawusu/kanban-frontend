@@ -1,9 +1,12 @@
 import { userAuthStore } from "@/store";
 import { useModal } from ".";
+import { useRouter } from "vue-router";
+import { ROUTES } from "@/helpers";
 
 const accountOptions = [{ label: "Logout", value: "logout" }];
 
 export function useAccount() {
+  const router = useRouter();
   const { reset } = userAuthStore();
   const { isOpen, openModal, closeModal } = useModal();
   function performDropdownActions(action: string) {
@@ -20,6 +23,7 @@ export function useAccount() {
   function logout() {
     reset();
     closeModal();
+    router.push(ROUTES.auth.login);
   }
 
   return {

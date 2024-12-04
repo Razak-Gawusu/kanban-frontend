@@ -18,7 +18,7 @@ const { theme } = useTheme();
 <template>
   <div
     :class="
-      cn('w-full grid gap-6 p-6 md:p-8 rounded-md', {
+      cn('bg-white w-full grid gap-6 p-6 md:p-8 rounded-md', {
         'bg-white': theme === 'light',
         'bg-gray-500': theme === 'dark',
       })

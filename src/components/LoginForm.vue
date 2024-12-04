@@ -19,11 +19,7 @@ const emit =
     :validationSchema="loginSchema"
     class="grid gap-6 mt-10"
   >
-    <TextField
-      label="Your email"
-      name="email"
-      placeholder="example@gmail.com"
-    />
+    <TextField label="Username" name="username" type="text" />
     <div class="grid gap-2">
       <TextField label="Password" name="password" placeholder="password" />
       <div class="flex gap-1 text-sm">

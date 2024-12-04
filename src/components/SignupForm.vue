@@ -19,7 +19,6 @@ const emit =
     :validation-schema="signupSchema"
     class="grid gap-6 mt-10"
   >
-    <TextField label="Username" name="username" placeholder="username" />
     <TextField
       label="Your email"
       name="email"

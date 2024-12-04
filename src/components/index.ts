@@ -13,9 +13,14 @@ import BoardForm from "./BoardForm.vue";
 import MobileSidebar from "./MobileSidebar.vue";
 import DeletePrompt from "./DeletePrompt.vue";
 import Column from "./Column.vue";
+import Select from "./Select.vue";
+import SubTask from "./SubTask.vue";
+import TaskDetails from "./TaskDetails.vue";
 export * from "./icons";
 
 export {
+  TaskDetails,
+  SubTask,
   Column,
   TaskForm,
   BoardForm,
@@ -31,4 +36,5 @@ export {
   Icon,
   Avatar,
   Modal,
+  Select,
 };

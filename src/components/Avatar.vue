@@ -5,6 +5,8 @@ import { cn } from "@/plugins";
 
 const { theme } = useTheme();
 const { username = "-" } = defineProps<{ username?: string }>();
+
+console.log({ username });
 </script>
 
 <template>

@@ -9,7 +9,7 @@ const emit = defineEmits();
 
 const handleChange = (event: Event) => {
   if (!disabled) {
-    emit("update:checked", (event.target as HTMLInputElement).checked);
+    emit("change", (event.target as HTMLInputElement).checked);
   }
 };
 </script>

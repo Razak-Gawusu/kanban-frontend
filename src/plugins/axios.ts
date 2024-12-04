@@ -4,8 +4,7 @@ import axios, { AxiosError } from "axios";
 import { ROUTES } from "@/helpers";
 
 export const ENV_VARS = {
-  API_BASE_URL:
-    import.meta.env.VITE_API_BASE_URL || "https://jsonplaceholder.typicode.com",
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000",
 };
 
 const instance = axios.create({
@@ -37,7 +36,7 @@ instance.interceptors.request.use((request: any) => {
     ...request,
     headers: {
       ...headers,
-      Authorization: `Bearer ${token ? token : ""}`,
+      Authorization: `JWT ${token ? token : ""}`,
     },
   };
 });

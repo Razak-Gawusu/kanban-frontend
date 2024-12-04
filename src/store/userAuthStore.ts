@@ -20,18 +20,30 @@ export const userAuthStore = defineStore("user", () => {
 
   function reset() {
     state.value = initialState;
+
+    localStorage.setItem("kanban-auth", JSON.stringify(initialState));
   }
 
   function authenticate(token: string) {
     state.value = { user: jwtDecode(token), token, isAuthenticated: true };
+
+    localStorage.setItem("kanban-auth", JSON.stringify(state.value));
   }
 
   function getToken() {
-    return state.value?.token;
+    const state = localStorage.getItem("kanban-auth");
+
+    if (state) {
+      return JSON.parse(state)?.token;
+    }
   }
 
   function getUser() {
-    return state.value?.user;
+    const state = localStorage.getItem("kanban-auth");
+
+    if (state) {
+      return JSON.parse(state)?.user;
+    }
   }
 
   return { reset, authenticate, getToken, getUser };

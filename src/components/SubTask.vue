@@ -4,9 +4,10 @@ import { cn } from "@/plugins";
 import { ISubTask } from "@/interfaces";
 import Checkbox from "./Checkbox.vue";
 
-const { title, isCompleted } = defineProps<ISubTask>();
+defineProps<ISubTask>();
 
 const { theme } = useTheme();
+const emit = defineEmits(["change"]);
 </script>
 
 <template>
@@ -19,14 +20,17 @@ const { theme } = useTheme();
       )
     "
   >
-    <Checkbox :checked="isCompleted" />
+    <Checkbox
+      :checked="is_completed"
+      :id="String(id)"
+      @change="emit('change')"
+    />
 
     <label
-      for=""
-      :class="cn('text-xs', { 'line-through text-gray': isCompleted })"
+      :for="String(id)"
+      :class="cn('text-xs', { 'line-through text-gray': is_completed })"
     >
       {{ title }}
     </label>
   </div>
 </template>
-@/interfaces

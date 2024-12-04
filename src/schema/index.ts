@@ -3,7 +3,6 @@ import { z } from "zod";
 
 export const signupSchema = toTypedSchema(
   z.object({
-    username: z.string().min(1, "Username is required"),
     email: z.string().email(),
     password: z
       .string()
@@ -17,7 +16,7 @@ export const signupSchema = toTypedSchema(
 
 export const loginSchema = toTypedSchema(
   z.object({
-    email: z.string().email(),
+    username: z.string(),
     password: z.string().min(1, "Password is required"),
   })
 );
@@ -30,6 +29,21 @@ export const boardSchema = toTypedSchema(
         z.object({
           id: z.string().optional(),
           title: z.string().min(1, "Can't be empty"),
+        })
+      )
+      .optional(),
+  })
+);
+
+export const taskSchema = toTypedSchema(
+  z.object({
+    title: z.string().min(1, "Can't be empty"),
+    description: z.string(),
+    subTasks: z
+      .array(
+        z.object({
+          title: z.string().min(1, "Can't be empty"),
+          is_completed: z.boolean(),
         })
       )
       .optional(),

@@ -19,13 +19,14 @@ export function useDeleteResource({ resource, queryKeys }: Params) {
         httpClient.delete(`/${resource}/${id}`),
       onSuccess: () => {
         console.log("successfully deleted resource");
+        closeModal();
+
         if (queryKeys) {
           queryKeys.forEach((element) => {
             queryClient.invalidateQueries({ queryKey: [element] });
           });
         }
         if (resource === "boards") {
-          closeModal();
           router.push({ name: "home" });
         }
       },

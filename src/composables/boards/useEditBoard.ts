@@ -3,6 +3,7 @@ import { httpClient } from "@/plugins";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { useModal } from "..";
 import { MaybeRef, toValue } from "vue";
+import { separateResource } from "@/helpers";
 
 export function useEditBoard(boardId: MaybeRef<string | string[]>) {
   const queryClient = useQueryClient();
@@ -17,10 +18,7 @@ export function useEditBoard(boardId: MaybeRef<string | string[]>) {
         title,
       });
 
-      console.log({ board });
-      console.log({ columns });
-
-      const { newColumns, existingColumns } = separateColumns(columns);
+      const [newColumns, existingColumns] = separateResource(columns);
 
       //   include columns in created board
       if (newColumns) {

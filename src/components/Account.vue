@@ -2,18 +2,13 @@
 import { Dropdown, Avatar, Modal } from "@/components";
 import { useAccount } from "@/composables";
 import { userAuthStore } from "@/store";
-import { computed, watchEffect } from "vue";
+import { computed } from "vue";
 import DeletePrompt from "./DeletePrompt.vue";
 
 const { accountOptions, performDropdownActions, closeModal, isOpen, logout } =
   useAccount();
 const { getUser } = userAuthStore();
 const username = computed(() => getUser()?.username);
-
-watchEffect(() => {
-  console.log({ isOpen: isOpen.value });
-});
-console.log({ username, user: getUser() });
 </script>
 
 <template>
@@ -28,10 +23,11 @@ console.log({ username, user: getUser() });
 
   <Modal :is-open="isOpen" @close-modal="closeModal">
     <DeletePrompt
-      submit-btn-label="Logout"
+      submitBtnLabel="Logout"
       title="Logout"
       description="Are you sure you want to logout?"
       @close-modal="closeModal"
+      :isLoading="false"
       @submit="logout"
     />
   </Modal>

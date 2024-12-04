@@ -3,10 +3,10 @@ import { cn } from "../plugins";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
+  useCreateTask,
   useDeleteResource,
   useEditBoard,
   useGetBoard,
-  useModal,
   useTheme,
 } from "../composables";
 import {
@@ -32,7 +32,9 @@ const {
   isOpen: isOpenCreateTask,
   openModal: openModalCreateTask,
   closeModal: closeModalCreateTask,
-} = useModal();
+  createTask,
+  isLoadingCreateTask,
+} = useCreateTask();
 
 const boardOptions = [
   { label: "Edit Board", value: "edit" },
@@ -40,6 +42,7 @@ const boardOptions = [
 ];
 
 const { data } = useGetBoard(computed(() => route.params.boardId));
+
 const {
   editBoard,
   isLoadingEditBoard,
@@ -58,12 +61,12 @@ const {
   resource: "boards",
   queryKeys: ["boards"],
 });
+
 // const columns = computed(() => data.value?.data.columns);
 const title = computed(() => data.value?.data.title);
 const initialData = computed(() => data.value?.data);
 const show = computed(() => Boolean(data.value?.data));
-
-console.log({ data: data.value });
+const columns = computed(() => data.value?.data.columns);
 
 function performDropdownActions(action: string) {
   switch (action) {
@@ -128,7 +131,12 @@ function performDropdownActions(action: string) {
   </header>
 
   <Modal :isOpen="isOpenCreateTask" @close-modal="closeModalCreateTask">
-    <TaskForm title="Add New Task" />
+    <TaskForm
+      title="Add New Task"
+      @submit="createTask"
+      :is-loading="isLoadingCreateTask"
+      :columns="columns"
+    />
   </Modal>
   <Modal :isOpen="isOpenEditBoard" @close-modal="closeModalEditBoard">
     <BoardForm

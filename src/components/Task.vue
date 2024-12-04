@@ -2,13 +2,32 @@
 import { useTheme } from "@/composables";
 import { cn } from "@/plugins";
 import { ITask } from "@/interfaces";
-import Modal from "./Modal.vue";
-import { useModal } from "@/composables";
-import TaskDetails from "./TaskDetails.vue";
+import { Modal, TaskDetails } from "@/components";
+import { useModal, useGetBoard } from "@/composables";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const { task } = defineProps<{ task: ITask }>();
 const { theme } = useTheme();
 const { isOpen, openModal, closeModal } = useModal();
+const { data } = useGetBoard(computed(() => route.params.boardId));
+
+const numberOfSubTasksCompleted = computed(() => {
+  let sum = 0;
+  for (let item of task.subTasks) {
+    if (item.is_completed) {
+      sum += 1;
+    }
+  }
+  return sum;
+});
+const subTasksTotal = computed(() => {
+  return task.subTasks.length;
+});
+
+const columns = computed(() => data.value?.data.columns ?? []);
 </script>
 
 <template>
@@ -30,11 +49,18 @@ const { isOpen, openModal, closeModal } = useModal();
     >
       {{ task.title }}
     </h3>
-    <p class="text-sm text-gray">0 of 3 substasks</p>
+    <p class="text-sm text-gray">
+      {{ numberOfSubTasksCompleted }} of {{ subTasksTotal }} substasks
+    </p>
   </div>
 
-  <Modal :isOpen="isOpen" @close:modal="closeModal">
-    <TaskDetails />
+  <Modal :isOpen="isOpen" @closeModal="closeModal">
+    <TaskDetails
+      :columns="columns"
+      :task="task"
+      :numberOfSubTasksCompleted="numberOfSubTasksCompleted"
+      :subTasksTotal="subTasksTotal"
+    />
   </Modal>
 </template>
 
